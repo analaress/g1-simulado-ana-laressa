@@ -1,5 +1,6 @@
 import { ShoppingCart } from '@phosphor-icons/react'
 import { useTheme } from 'styled-components'
+import { useNavigate } from 'react-router-dom'
 
 import { QuantityInput } from '../Form/QuantityInput'
 import {
@@ -29,11 +30,36 @@ type CoffeeCardProps = {
 
 export function CoffeeCard({coffee, incrementQuantity, decrementQuantity}: CoffeeCardProps) {
   const theme = useTheme();
+  const navigate = useNavigate();
 
   function handleAddItem() {
-    console.log('Adicionar item ao carrinho')
-    return;
+
+    const currentCart = JSON.parse(localStorage.getItem('cart') || '[]');
+    
+    const existingItem = currentCart.find((cartItem: any) => cartItem.id === coffee.id);
+    
+    if (existingItem) {
+      existingItem.quantity += 1;
+      existingItem.subTotal = existingItem.price * existingItem.quantity;
+    } else {
+      currentCart.push({
+        id: coffee.id,
+        title: coffee.title,
+        description: coffee.description,
+        tags: coffee.tags,
+        price: coffee.price,
+        image: coffee.image,
+        quantity: 1,
+        subTotal: coffee.price, 
+      });
+    }
+
+    localStorage.setItem('cart', JSON.stringify(currentCart));
+
+    navigate('/cart');
   }
+  
+      
 
   return (
     <Container>
@@ -59,8 +85,8 @@ export function CoffeeCard({coffee, incrementQuantity, decrementQuantity}: Coffe
         <Order $itemAdded={false}>
           <QuantityInput
             quantity={coffee.quantity} // Aqui você pode passar a quantidade do café
-            incrementQuantity={() => {incrementQuantity}} // Aqui você pode passar a função de incrementar
-            decrementQuantity={() => {decrementQuantity}} // Aqui você pode passar a função de decrementar
+            incrementQuantity={() => {incrementQuantity(coffee.id)}} // Aqui você pode passar a função de incrementar
+            decrementQuantity={() => {decrementQuantity(coffee.id)}} // Aqui você pode passar a função de decrementar
           />
 
           <button onClick={handleAddItem}>

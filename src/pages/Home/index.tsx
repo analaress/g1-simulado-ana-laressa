@@ -27,7 +27,6 @@ export function Home() {
     setLoading(true)
     const response = await api.get('/coffees')
 
-    console.log(response.data)
     setCoffees(response.data)
       
     } catch (error) {
@@ -45,20 +44,22 @@ export function Home() {
 
 
   useEffect(() => {
-    console.log({loading})
   }, [loading])
 
   
   function incrementQuantity(id: string) {
     console.log('aqui')
-    const filtro = coffees.filter(coffee => coffee.id === id ? coffee.quantity + 1 : coffee.quantity)
+    const filtro = coffees.map(coffee => coffee.id === id && coffee.quantity < 5 ? { ...coffee, quantity: coffee.quantity + 1}
+       : coffee)
     setCoffees(filtro)
   }
 
   function decrementQuantity(id: string) {
-    const filtro = coffees.filter(coffee => coffee.id === id ? coffee.quantity - 1 : coffee.quantity)
+    const filtro = coffees.map(coffee => coffee.id === id && coffee.quantity > 0 ? 
+      {...coffee, quantity: coffee.quantity - 1} : coffee )
     setCoffees(filtro)  
   }
+
 
   return (
     <div>
@@ -129,14 +130,14 @@ export function Home() {
         <h2>Nossos cafés</h2>
 
         <div>
-          loading ? <Loading/>
+          {loading ? <Loading /> : null}
         </div>
 
         <div>
         {coffees.map((coffee) => (
             <CoffeeCard key={coffee.id} coffee={coffee}
-            incrementQuantity={() => incrementQuantity}
-            decrementQuantity={() => decrementQuantity}
+            incrementQuantity={() => incrementQuantity(coffee.id)}
+            decrementQuantity={() => decrementQuantity(coffee.id)}
             />
           ))}
         </div>
