@@ -1,10 +1,11 @@
 import { Coffee, Package, ShoppingCart, Timer } from '@phosphor-icons/react'
 import { useTheme } from 'styled-components'
+import { api } from '../../axios'
 
 import { CoffeeCard } from '../../components/CoffeeCard'
-
+import { Loading } from '../../components/Loading'
 import { CoffeeList, Heading, Hero, HeroContent, Info } from './styles'
-import { useEffect } from 'react';
+import { useEffect, useState } from 'react';
 
 interface Coffee {
   id: string;
@@ -18,20 +19,45 @@ interface Coffee {
 
 export function Home() {
   const theme = useTheme();
+  const [coffees, setCoffees] = useState <Coffee[]>([]);
+  const [loading, setLoading] = useState(false)
+
+  async function apiDados() {
+    try {
+    setLoading(true)
+    const response = await api.get('/coffees')
+
+    console.log(response.data)
+    setCoffees(response.data)
+      
+    } catch (error) {
+      console.log('erro', error)
+    } finally {
+      setLoading(false)
+    }
+
+
+  }
 
   useEffect(() => {
-    // request para a API para pegar os cafés
-    // e setar no estado
+    apiDados()
   }, []);
 
 
+  useEffect(() => {
+    console.log({loading})
+  }, [loading])
+
   
   function incrementQuantity(id: string) {
-    // Aqui você pode fazer a lógica para incrementar a quantidade do café
+    console.log('aqui')
+    const filtro = coffees.filter(coffee => coffee.id === id ? coffee.quantity + 1 : coffee.quantity)
+    setCoffees(filtro)
   }
 
   function decrementQuantity(id: string) {
-    // Aqui você pode fazer a lógica para decrementar a quantidade do café
+    const filtro = coffees.filter(coffee => coffee.id === id ? coffee.quantity - 1 : coffee.quantity)
+    setCoffees(filtro)  
   }
 
   return (
@@ -97,22 +123,20 @@ export function Home() {
         <img src="/images/hero-bg.svg" id="hero-bg" alt="" />
       </Hero>
 
+
+    
       <CoffeeList>
         <h2>Nossos cafés</h2>
 
         <div>
-        {[1,2,3].map((coffee) => (
-            <CoffeeCard key={coffee} coffee={{
-              description: 'Café expresso tradicional com espuma cremosa',
-              id: '1',
-              image: "/images/coffees/expresso-cremoso.png",
-              price: 9.90,
-              tags: ['Tradicional', 'Comum'],
-              title: 'Expresso Tradicional',
-              quantity: 1,
-            }}
-            incrementQuantity={incrementQuantity}
-            decrementQuantity={decrementQuantity}
+          loading ? <Loading/>
+        </div>
+
+        <div>
+        {coffees.map((coffee) => (
+            <CoffeeCard key={coffee.id} coffee={coffee}
+            incrementQuantity={() => incrementQuantity}
+            decrementQuantity={() => decrementQuantity}
             />
           ))}
         </div>
