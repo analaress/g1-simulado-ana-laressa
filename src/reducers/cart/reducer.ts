@@ -5,6 +5,12 @@ import { OrderInfo } from '../../pages/Cart'
 export interface Item {
   id: string
   quantity: number
+  title: string;
+  description: string;
+  tags: string[];
+  price: number;
+  image: string;
+  subTotal: number;
 }
 
 export interface Order extends OrderInfo {

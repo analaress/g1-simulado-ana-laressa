@@ -1,8 +1,11 @@
 import { ShoppingCart } from '@phosphor-icons/react'
 import { useTheme } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
+import { CartContext } from '../../contexts/CartProvider'
 
+import { useContext } from 'react'
 import { QuantityInput } from '../Form/QuantityInput'
+
 import {
   CoffeeImg,
   Container,
@@ -31,32 +34,16 @@ type CoffeeCardProps = {
 export function CoffeeCard({coffee, incrementQuantity, decrementQuantity}: CoffeeCardProps) {
   const theme = useTheme();
   const navigate = useNavigate();
+  const { addItem } = useContext(CartContext);
 
   function handleAddItem() {
 
-    const currentCart = JSON.parse(localStorage.getItem('cart') || '[]');
-    
-    const existingItem = currentCart.find((cartItem: any) => cartItem.id === coffee.id);
-    
-    if (existingItem) {
-      existingItem.quantity += 1;
-      existingItem.subTotal = existingItem.price * existingItem.quantity;
-    } else {
-      currentCart.push({
-        id: coffee.id,
-        title: coffee.title,
-        description: coffee.description,
-        tags: coffee.tags,
-        price: coffee.price,
-        image: coffee.image,
-        quantity: 1,
-        subTotal: coffee.price, 
-      });
-    }
-
-    localStorage.setItem('cart', JSON.stringify(currentCart));
-
+    addItem(coffee)
     navigate('/cart');
+
+
+    // navigate('/cart', {state: {coffee}});
+
   }
   
       

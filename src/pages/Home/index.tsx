@@ -48,7 +48,6 @@ export function Home() {
 
   
   function incrementQuantity(id: string) {
-    console.log('aqui')
     const filtro = coffees.map(coffee => coffee.id === id && coffee.quantity < 5 ? { ...coffee, quantity: coffee.quantity + 1}
        : coffee)
     setCoffees(filtro)
