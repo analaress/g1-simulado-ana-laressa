@@ -15,8 +15,9 @@ import {
 } from './styles'
 import { Description, Tags } from '../../components/CoffeeCard/styles'
 
-import { CartContext } from '../../contexts/CartProvider'
-import { useContext, useEffect } from 'react'
+import { useEffect } from 'react'
+
+import { useCart } from '../../hooks/useCart'
 
 export interface Item {
   id: string
@@ -38,13 +39,22 @@ interface CoffeeInCart {
   subTotal: number;
 } 
 
+
+export interface OrderInfo {
+  street: string;
+  number: string;
+  neighborhood: string;
+  city: string;
+  state: string;
+  paymentMethod: 'credit' | 'debit' | 'cash';
+}
+
+
 const DELIVERY_PRICE = 3.75;
 
 export function Cart() {
-  const {cart, orders, checkout } = useContext(CartContext)
+  const {cart, checkout } = useCart()
   const [coffeesInCart, setCoffeesInCart] = useState<CoffeeInCart[]>([]);
-
-  console.log("tudo q vem do cart", cart)
 
   const mapeiaCart =  cart.map((item) => ({
     id: item.id,
@@ -61,6 +71,21 @@ export function Cart() {
     setCoffeesInCart(mapeiaCart)
   }, [cart])
 
+  const submitCheckout = (e: React.FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const order: OrderInfo = {
+      street: 'Rua das Flores',
+      number: '123',
+      neighborhood: 'Centro',
+      city: 'São Paulo',
+      state: 'SP',
+      paymentMethod: 'cash'
+    }
+  
+    checkout(order);
+
+  }
 
   const amountTags: string[] = [];
   
@@ -96,8 +121,6 @@ export function Cart() {
     setCoffeesInCart(novaLista);
     
   }
-
-  console.log(amountTags.length)
 
   return (
     <Container>
@@ -174,9 +197,12 @@ export function Cart() {
             </div>
           </CartTotalInfo>
 
-          <CheckoutButton type="submit" form="order">
-            Confirmar pedido
-          </CheckoutButton>
+          <form id="order" onSubmit={submitCheckout}>
+            <CheckoutButton type="submit" form="order">
+              Confirmar pedido
+            </CheckoutButton>
+          </form>
+          
         </CartTotal>
       </InfoContainer>
     </Container>

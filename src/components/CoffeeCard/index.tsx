@@ -1,9 +1,8 @@
 import { ShoppingCart } from '@phosphor-icons/react'
 import { useTheme } from 'styled-components'
 import { useNavigate } from 'react-router-dom'
-import { CartContext } from '../../contexts/CartProvider'
 
-import { useContext } from 'react'
+import { useCart } from '../../hooks/useCart'
 import { QuantityInput } from '../Form/QuantityInput'
 
 import {
@@ -34,19 +33,12 @@ type CoffeeCardProps = {
 export function CoffeeCard({coffee, incrementQuantity, decrementQuantity}: CoffeeCardProps) {
   const theme = useTheme();
   const navigate = useNavigate();
-  const { addItem } = useContext(CartContext);
+  const { addItem } = useCart();
 
   function handleAddItem() {
-
     addItem(coffee)
     navigate('/cart');
-
-
-    // navigate('/cart', {state: {coffee}});
-
-  }
-  
-      
+  } 
 
   return (
     <Container>
