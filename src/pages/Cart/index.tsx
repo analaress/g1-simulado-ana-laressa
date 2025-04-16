@@ -53,7 +53,7 @@ export interface OrderInfo {
 const DELIVERY_PRICE = 3.75;
 
 export function Cart() {
-  const {cart, checkout } = useCart()
+  const {cart, checkout, removeItem } = useCart()
   const [coffeesInCart, setCoffeesInCart] = useState<CoffeeInCart[]>([]);
 
   const mapeiaCart =  cart.map((item) => ({
@@ -107,6 +107,9 @@ export function Cart() {
        {...coffee, quantity: coffee.quantity + 1,
          subTotal: (coffee.quantity + 1) * coffee.price} : coffee)
     setCoffeesInCart(novaQt);
+
+    // ou chamar incrementItemQuantity do contexto
+
   }
 
   function handleItemDecrement(itemId: string) {
@@ -114,11 +117,15 @@ export function Cart() {
       {...coffee, quantity: coffee.quantity - 1,
          subTotal: (coffee.quantity - 1) * coffee.price} : coffee)
     setCoffeesInCart(novaQt);
+
+    // ou chamar decrementItemQuantity do contexto
   }
 
   function handleItemRemove(itemId: string) {
-    const novaLista = coffeesInCart.filter(coffee => coffee.id !== itemId);
-    setCoffeesInCart(novaLista);
+    // const novaLista = coffeesInCart.filter(coffee => coffee.id !== itemId);
+    // setCoffeesInCart(novaLista); 
+
+    removeItem(itemId); // seta no cart e o contexto faz o restante
     
   }
 
